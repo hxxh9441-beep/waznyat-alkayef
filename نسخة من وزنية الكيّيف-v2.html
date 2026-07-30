@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>وزنية الكيّيف 🫖</title>
+<meta name="theme-color" content="#DED8CD">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --bg: #DED8CD; /* لون لايمستون 10341 */
+    --accent: #8E5B2E; 
+    --text-primary: #2C2824;
+    --text-secondary: #6B645C;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Sans Arabic', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 20px 16px 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* دوائر إضاءة خلفية تبرز زجاجية الكروت */
+  .bg-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-orb-1 { top: -50px; left: -50px; width: 260px; height: 260px; background: rgba(255, 255, 255, 0.75); }
+  .bg-orb-2 { top: 250px; right: -60px; width: 240px; height: 240px; background: rgba(200, 160, 110, 0.35); }
+  .bg-orb-3 { bottom: 100px; left: -40px; width: 220px; height: 220px; background: rgba(255, 255, 255, 0.6); }
+
+  /* 🍵 طبقة لون التخدرة في الخلفية (تزداد شفافيتها ببطء حتى تكتمل 25 دقيقة) */
+  .tea-steep-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, #D07F38 0%, #7A3311 100%);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s linear;
+  }
+
+  /* 🍃 حاوية أوراق الشاي المتساقطة */
+  .leaves-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+  .falling-leaf {
+    position: absolute;
+    top: -40px;
+    animation: fallLeaf linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes fallLeaf {
+    0% {
+      transform: translateY(-20px) rotate(0deg) translateX(0);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.65;
+    }
+    85% {
+      opacity: 0.65;
+    }
+    100% {
+      transform: translateY(108vh) rotate(360deg) translateX(50px);
+      opacity: 0;
+    }
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+  .header h1 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: var(--text-primary);
+    text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+  }
+  .header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  /* 💎 بطاقة زجاجية حقيقية (Apple Frosted Glass) */
+  .card {
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(25px) saturate(190%);
+    -webkit-backdrop-filter: blur(25px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 
+      0 12px 32px 0 rgba(70, 60, 45, 0.06),
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Segmented Control */
+  .segmented-control {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-md);
+    padding: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .segment-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 12px 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: inherit;
+    text-align: center;
+  }
+  .segment-btn.active {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1);
+  }
+  .segment-btn span {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+
+  .custom-input-group {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .custom-input-group:focus-within {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.8);
+  }
+  .custom-input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+  .custom-input-group input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: left;
+    width: 80px;
+    font-family: inherit;
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .metric-item {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .metric-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .metric-value {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 8px 0 4px;
+    color: var(--text-primary);
+  }
+  .metric-sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Timer Component */
+  .timer-container {
+    text-align: center;
+    padding: 10px 0;
+  }
+  .timer-display {
+    font-size: 58px;
+    font-weight: 300;
+    letter-spacing: -2px;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+  }
+  .timer-display.running {
+    color: var(--accent);
+    font-weight: 400;
+  }
+  
+  .progress-wrapper {
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 10px;
+    transition: width 1s linear;
+  }
+
+  .btns-row {
+    display: flex;
+    gap: 10px;
+  }
+  .apple-btn {
+    flex: 2;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--text-primary);
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(44,40,36,0.25);
+  }
+  .apple-btn:active { transform: scale(0.96); opacity: 0.85; }
+  .apple-btn.secondary {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+    box-shadow: none;
+  }
+
+  /* Tips */
+  .tip-item {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-right: 3px solid var(--accent);
+    border-top: 1px solid rgba(255,255,255,0.6);
+  }
+  .tip-item:last-child { margin-bottom: 0; }
+  .tip-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .tip-item-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+  .modal-card {
+    background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(255,255,255,0.8); border-radius: 28px; padding: 32px 24px;
+    width: 85%; max-width: 320px; text-align: center; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  }
+  .modal-overlay.active .modal-card { transform: scale(1); }
+  .modal-icon { font-size: 48px; margin-bottom: 12px; display: block; animation: float 2.5s infinite ease-in-out; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .modal-card h3 { font-size: 22px; margin-bottom: 8px; color: var(--text-primary); font-weight: 800; }
+  .modal-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; font-weight: 500; }
+  .modal-btn {
+    width: 100%; padding: 14px; border-radius: 16px; background: var(--text-primary); color: #FFFFFF; border: none; font-weight: 700; font-size: 15px; cursor: pointer;
+  }
+
+  /* PWA Banner */
+  .pwa-banner {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
+    width: calc(100% - 32px); max-width: 400px;
+    background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 20px; padding: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12); z-index: 999;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; gap: 14px;
+  }
+  .pwa-banner.show { transform: translateX(-50%) translateY(0); }
+  .pwa-icon {
+    width: 44px; height: 44px; background: rgba(0,0,0,0.05); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px; border: 1px solid rgba(0,0,0,0.05);
+  }
+  .pwa-text { flex: 1; }
+  .pwa-text h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .pwa-text p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
+  .pwa-action-btn {
+    background: var(--text-primary); color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- دوائر الإضاءة الخلفية -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- 🍵 طبقة لون الشاي المتخدر في الخلفية -->
+<div id="teaSteepBg" class="tea-steep-bg"></div>
+
+<!-- 🍃 أوراق الشاي التساقطة -->
+<div id="leavesContainer" class="leaves-container"></div>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>وزنية الكيّيف</h1>
+    <p>دقة متناهية في إعداد الشاي 🫖</p>
+  </div>
+
+  <!-- Water Selector -->
+  <div class="card">
+    <div class="card-title">💧 حجم الإبريق</div>
+    <div class="segmented-control">
+      <button class="segment-btn" onclick="setWater(350, this)">
+        <span>☕</span> 350 ml
+      </button>
+      <button class="segment-btn active" onclick="setWater(1000, this)">
+        <span>🫖</span> 1,000 ml
+      </button>
+      <button class="segment-btn" onclick="setWater(1800, this)">
+        <span>🏺</span> 1,800 ml
+      </button>
+    </div>
+    <div class="custom-input-group">
+      <label>مقدار مخصص (ml) ✍️</label>
+      <input type="number" id="customMl" placeholder="مثال: 800" oninput="setCustomWater(this.value)">
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="card">
+    <div class="card-title">⚖️ المقادير الموصى بها</div>
+    <div class="metrics-grid">
+      <div class="metric-item">
+        <div class="metric-label">🍬 السكر</div>
+        <div class="metric-value" id="sugarVal">75</div>
+        <div class="metric-sub" id="sugarTbsp">≈ 6 ملاعق كبيرة</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-label">🌿 ورق الشاي</div>
+        <div class="metric-value" id="teaVal">12</div>
+        <div class="metric-sub" id="teaTbsp">≈ 2 ملعقة كبيرة</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timer -->
+  <div class="card">
+    <div class="card-title">⏳ مؤقت التخدرة</div>
+    <div class="timer-container">
+      <div class="timer-display" id="timerDisplay">25:00</div>
+      
+      <div class="progress-wrapper">
+        <div class="progress-fill" id="timerProgress"></div>
+      </div>
+
+      <div class="btns-row">
+        <button class="apple-btn" id="timerBtn" onclick="toggleTimer()">▶️ ابدأ التخدرة</button>
+        <button class="apple-btn secondary" onclick="resetTimer()">🔄 إعادة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="card">
+    <div class="card-title">💡 نصائح التخدير والكيف</div>
+    
+    <div class="tip-item">
+      <div class="tip-item-title">💧 جودة الماء (TDS)</div>
+      <div class="tip-item-desc">
+        لأفضل طعم ولون، استخدم مياه قليلة الأملاح (بين 70 إلى 120). المياه عالية الأملاح تجعل الشاي أسود ومرّ.
+      </div>
+    </div>
+
+    <div class="tip-item">
+      <div class="tip-item-title">🕒 زمن التخدرة</div>
+      <div class="tip-item-desc">
+        الوقت المثالي لتخدرة الشاي بين 25 و 30 دقيقة. لا تتركه يتجاوز هذا الوقت للحفاظ على الطعم الأصيل بدون مرارة.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="doneModal">
+  <div class="modal-card">
+    <span class="modal-icon">☕</span>
+    <h3>الكيف جاهز!</h3>
+    <p>تمت التخدرة بنجاح، صب لك بيالة وروّق والمزاج عالي.</p>
+    <button class="modal-btn" onclick="closeModal()">بالعافية 🤍</button>
+  </div>
+</div>
+
+<!-- Apple Install PWA Banner -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-icon">🫖</div>
+  <div class="pwa-text">
+    <h4>تثبيت التطبيق 📲</h4>
+    <p id="pwaInstruction">أضفه لشاشتك الرئيسية للوصول السريع</p>
+  </div>
+  <button class="pwa-action-btn" id="pwaBtn" onclick="installPWA()">تثبيت</button>
+</div>
+
+<script>
+  const BASE_ML = 1000, BASE_SUGAR = 75, BASE_TEA = 12;
+  const SUGAR_PER_TBSP = 12.5, TEA_PER_TBSP = 6;
+  const TOTAL_TIME = 1500; // 25 minutes
+  
+  let currentMl = 1000, timerSeconds = TOTAL_TIME, timerRunning = false, timerInterval = null;
+
+  // توليد أوراق شاي تسقط بشكل عشوائي وبطيء
+  function initFallingLeaves() {
+    const container = document.getElementById('leavesContainer');
+    const leafSVG = `<svg viewBox="0 0 30 30" width="100%" height="100%"><path d="M 15,3 C 25,8 27,22 15,27 C 3,22 5,8 15,3 Z" fill="#422B17" opacity="0.65"/><path d="M 15,3 L 15,27" stroke="#68472C" stroke-width="1.2"/></svg>`;
+    const count = 18; // عدد الأوراق
+
+    for (let i = 0; i < count; i++) {
+      const leaf = document.createElement('div');
+      leaf.className = 'falling-leaf';
+      leaf.innerHTML = leafSVG;
+      
+      const size = Math.random() * 14 + 14; // حجم الورقة بين 14px و 28px
+      const left = Math.random() * 100; // موقع أفقياً
+      const duration = Math.random() * 8 + 10; // سرعة الهبوط (بين 10 و 18 ثانية)
+      const delay = Math.random() * 12; // تأخير عشوائي
+
+      leaf.style.width = `${size}px`;
+      leaf.style.height = `${size}px`;
+      leaf.style.left = `${left}%`;
+      leaf.style.animationDuration = `${duration}s`;
+      leaf.style.animationDelay = `${delay}s`;
+
+      container.appendChild(leaf);
+    }
+  }
+
+  function updateResults(ml) {
+    const sugar = Math.round((ml / BASE_ML) * BASE_SUGAR);
+    const tea = Math.round((ml / BASE_ML) * BASE_TEA * 10) / 10;
+    document.getElementById('sugarVal').textContent = sugar;
+    document.getElementById('teaVal').textContent = tea;
+    document.getElementById('sugarTbsp').textContent = `≈ ${Math.round(sugar / SUGAR_PER_TBSP)} ملاعق`;
+    document.getElementById('teaTbsp').textContent = `≈ ${Math.round(tea / TEA_PER_TBSP)} ملعقة`;
+  }
+
+  function setWater(ml, btn) {
+    currentMl = ml;
+    document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    document.getElementById('customMl').value = '';
+    updateResults(ml);
+    hapticFeedback();
+  }
+
+  function setCustomWater(val) {
+    if (!val || val <= 0) return;
+    currentMl = parseInt(val);
+    document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+    updateResults(currentMl);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    document.getElementById('timerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    
+    // نسبة التقدم من 0 إلى 1
+    const progressPercent = (TOTAL_TIME - timerSeconds) / TOTAL_TIME;
+    
+    // شريط التقدم
+    document.getElementById('timerProgress').style.width = `${progressPercent * 100}%`;
+    
+    // 🍵 تغير لون الخلفية تدريجياً لدرجة خدرة الشاي الأحمَر (تصل لـ 0.65 كحد أقصى للحفاظ على تباين النص)
+    document.getElementById('teaSteepBg').style.opacity = (progressPercent * 0.65).toFixed(3);
+  }
+
+  function toggleTimer() {
+    const btn = document.getElementById('timerBtn');
+    const display = document.getElementById('timerDisplay');
+    hapticFeedback();
+
+    if (timerRunning) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      btn.innerHTML = '▶️ متابعة';
+      display.classList.remove('running');
+    } else {
+      if(timerSeconds <= 0) timerSeconds = TOTAL_TIME;
+      timerRunning = true;
+      display.classList.add('running');
+      btn.innerHTML = '⏸ إيقاف مؤقت';
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          display.classList.remove('running');
+          btn.innerHTML = '▶️ ابدأ التخدرة';
+          finishBrewing();
+        }
+      }, 1000);
+    }
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerSeconds = TOTAL_TIME;
+    updateTimerDisplay();
+    document.getElementById('timerBtn').innerHTML = '▶️ ابدأ التخدرة';
+    document.getElementById('timerDisplay').classList.remove('running');
+    hapticFeedback();
+  }
+
+  function finishBrewing() {
+    document.getElementById('doneModal').classList.add('active');
+    playChime();
+    if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+  }
+
+  function closeModal() {
+    document.getElementById('doneModal').classList.remove('active');
+    resetTimer();
+  }
+
+  function playChime() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.5);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 1.5);
+    } catch(e) {}
+  }
+
+  function hapticFeedback() {
+    if(navigator.vibrate) navigator.vibrate(15);
+  }
+
+  // PWA Installation Logic
+  let deferredPrompt;
+  const pwaBanner = document.getElementById('pwaBanner');
+  const pwaInstruction = document.getElementById('pwaInstruction');
+  const pwaBtn = document.getElementById('pwaBtn');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initFallingLeaves();
+    if (isStandalone) return;
+    if (isIOS) {
+      pwaInstruction.textContent = 'اضغط مشاركة ⎋ بالأسفل ثم "إضافة للشاشة الرئيسية"';
+      pwaBtn.style.display = 'none';
+      setTimeout(() => pwaBanner.classList.add('show'), 2000);
+    }
+  });
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(() => pwaBanner.classList.add('show'), 2000);
+  });
+
+  function installPWA() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        pwaBanner.classList.remove('show');
+        deferredPrompt = null;
+      });
+    }
+  }
+
+  updateResults(1000);
+  updateTimerDisplay();
+</script>
+</body>
+</html>
