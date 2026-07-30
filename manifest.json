@@ -1,0 +1,22 @@
+{
+  "name": "وزنية الكيّيف",
+  "short_name": "الكيّيف",
+  "start_url": "https://hxxh9441-beep.github.io/waznyat-alkayef/",
+  "display": "standalone",
+  "background_color": "#DED8CD",
+  "theme_color": "#DED8CD",
+  "icons": [
+    {
+      "src": "https://hxxh9441-beep.github.io/waznyat-alkayef/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://hxxh9441-beep.github.io/waznyat-alkayef/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
