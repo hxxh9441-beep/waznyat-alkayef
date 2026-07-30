@@ -8,6 +8,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
+
+<!-- أيقونة تبويب المتصفح والآيفون -->
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
+<!-- صورة المعاينة عند مشاركة الرابط في الواتساب -->
+<meta property="og:title" content="وزنية الكيّيف 🫖">
+<meta property="og:description" content="دقة متناهية في إعداد الشاي">
+<meta property="og:image" content="https://hxxh9441-beep.github.io/waznyat-alkayef/icon.png">
+<meta property="og:type" content="website">
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
@@ -52,7 +63,7 @@
   .bg-orb-2 { top: 250px; right: -60px; width: 240px; height: 240px; background: rgba(200, 160, 110, 0.35); }
   .bg-orb-3 { bottom: 100px; left: -40px; width: 220px; height: 220px; background: rgba(255, 255, 255, 0.6); }
 
-  /* 🍵 طبقة لون التخدرة في الخلفية (تزداد شفافيتها ببطء حتى تكتمل 25 دقيقة) */
+  /* 🍵 طبقة لون التخدرة في الخلفية */
   .tea-steep-bg {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -63,7 +74,7 @@
     transition: opacity 1s linear;
   }
 
-  /* 🍃 حاوية أوراق الشاي المتساقطة */
+  /* 🍃 أوراق الشاي المتساقطة */
   .leaves-container {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -79,20 +90,10 @@
   }
 
   @keyframes fallLeaf {
-    0% {
-      transform: translateY(-20px) rotate(0deg) translateX(0);
-      opacity: 0;
-    }
-    15% {
-      opacity: 0.65;
-    }
-    85% {
-      opacity: 0.65;
-    }
-    100% {
-      transform: translateY(108vh) rotate(360deg) translateX(50px);
-      opacity: 0;
-    }
+    0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+    15% { opacity: 0.65; }
+    85% { opacity: 0.65; }
+    100% { transform: translateY(108vh) rotate(360deg) translateX(50px); opacity: 0; }
   }
 
   .container {
@@ -237,12 +238,22 @@
     align-items: center;
     gap: 6px;
   }
+  .metric-value-box {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin: 8px 0 4px;
+  }
   .metric-value {
     font-size: 32px;
     font-weight: 800;
     letter-spacing: -1px;
-    margin: 8px 0 4px;
     color: var(--text-primary);
+  }
+  .metric-unit {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
   }
   .metric-sub {
     font-size: 12px;
@@ -427,12 +438,18 @@
     <div class="metrics-grid">
       <div class="metric-item">
         <div class="metric-label">🍬 السكر</div>
-        <div class="metric-value" id="sugarVal">75</div>
+        <div class="metric-value-box">
+          <span class="metric-value" id="sugarVal">75</span>
+          <span class="metric-unit">جرام</span>
+        </div>
         <div class="metric-sub" id="sugarTbsp">≈ 6 ملاعق كبيرة</div>
       </div>
       <div class="metric-item">
         <div class="metric-label">🌿 ورق الشاي</div>
-        <div class="metric-value" id="teaVal">12</div>
+        <div class="metric-value-box">
+          <span class="metric-value" id="teaVal">12</span>
+          <span class="metric-unit">جرام</span>
+        </div>
         <div class="metric-sub" id="teaTbsp">≈ 2 ملعقة كبيرة</div>
       </div>
     </div>
@@ -503,21 +520,20 @@
   
   let currentMl = 1000, timerSeconds = TOTAL_TIME, timerRunning = false, timerInterval = null;
 
-  // توليد أوراق شاي تسقط بشكل عشوائي وبطيء
   function initFallingLeaves() {
     const container = document.getElementById('leavesContainer');
     const leafSVG = `<svg viewBox="0 0 30 30" width="100%" height="100%"><path d="M 15,3 C 25,8 27,22 15,27 C 3,22 5,8 15,3 Z" fill="#422B17" opacity="0.65"/><path d="M 15,3 L 15,27" stroke="#68472C" stroke-width="1.2"/></svg>`;
-    const count = 18; // عدد الأوراق
+    const count = 18;
 
     for (let i = 0; i < count; i++) {
       const leaf = document.createElement('div');
       leaf.className = 'falling-leaf';
       leaf.innerHTML = leafSVG;
       
-      const size = Math.random() * 14 + 14; // حجم الورقة بين 14px و 28px
-      const left = Math.random() * 100; // موقع أفقياً
-      const duration = Math.random() * 8 + 10; // سرعة الهبوط (بين 10 و 18 ثانية)
-      const delay = Math.random() * 12; // تأخير عشوائي
+      const size = Math.random() * 14 + 14;
+      const left = Math.random() * 100;
+      const duration = Math.random() * 8 + 10;
+      const delay = Math.random() * 12;
 
       leaf.style.width = `${size}px`;
       leaf.style.height = `${size}px`;
@@ -534,8 +550,8 @@
     const tea = Math.round((ml / BASE_ML) * BASE_TEA * 10) / 10;
     document.getElementById('sugarVal').textContent = sugar;
     document.getElementById('teaVal').textContent = tea;
-    document.getElementById('sugarTbsp').textContent = `≈ ${Math.round(sugar / SUGAR_PER_TBSP)} ملاعق`;
-    document.getElementById('teaTbsp').textContent = `≈ ${Math.round(tea / TEA_PER_TBSP)} ملعقة`;
+    document.getElementById('sugarTbsp').textContent = `≈ ${Math.round(sugar / SUGAR_PER_TBSP)} ملاعق كبيرة`;
+    document.getElementById('teaTbsp').textContent = `≈ ${Math.round(tea / TEA_PER_TBSP)} ملعقة كبيرة`;
   }
 
   function setWater(ml, btn) {
@@ -559,13 +575,8 @@
     const s = timerSeconds % 60;
     document.getElementById('timerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     
-    // نسبة التقدم من 0 إلى 1
     const progressPercent = (TOTAL_TIME - timerSeconds) / TOTAL_TIME;
-    
-    // شريط التقدم
     document.getElementById('timerProgress').style.width = `${progressPercent * 100}%`;
-    
-    // 🍵 تغير لون الخلفية تدريجياً لدرجة خدرة الشاي الأحمَر (تصل لـ 0.65 كحد أقصى للحفاظ على تباين النص)
     document.getElementById('teaSteepBg').style.opacity = (progressPercent * 0.65).toFixed(3);
   }
 
@@ -643,7 +654,7 @@
     if(navigator.vibrate) navigator.vibrate(15);
   }
 
-  // PWA Installation Logic
+  // PWA Logic
   let deferredPrompt;
   const pwaBanner = document.getElementById('pwaBanner');
   const pwaInstruction = document.getElementById('pwaInstruction');
