@@ -668,6 +668,10 @@
   let defaultSugarGrams = 65;
   let defaultTeaGrams = 12;
 
+  // عوامل الأزرار النشطة (تتحدث عند الضغط على تركيز الشاي / مستوى السكر)
+  let currentStrengthFactor = 1.0;   // 0.8 خفيف / 1.0 موزون / 1.3 ثقيل
+  let currentSugarFactor = 65/75;    // 0 بدون / 65/75 موزون / 1.0 حالي
+
   let totalTimeSeconds = 1500; // 25 min default
   let timerSeconds = 1500;
   let timerRunning = false;
@@ -753,21 +757,21 @@
 
   function setCustomWater(val) {
     if (!val || val <= 0) return;
-    const oldMl = currentMl;
     currentMl = parseInt(val);
     document.querySelectorAll('.card:nth-child(2) .segment-btn').forEach(b => b.classList.remove('active'));
-    
-    const ratio = currentMl / oldMl;
-    currentSugarGrams = Math.round(currentSugarGrams * ratio);
-    currentTeaGrams = Math.round((currentTeaGrams * ratio) * 10) / 10;
-    
-    defaultSugarGrams = Math.round(defaultSugarGrams * ratio);
-    defaultTeaGrams = Math.round((defaultTeaGrams * ratio) * 10) / 10;
-    
+
+    // حساب مباشر من العوامل النشطة — بدون نسبة تراكمية
+    currentTeaGrams = Math.round((currentMl / BASE_ML) * BASE_TEA * currentStrengthFactor * 10) / 10;
+    currentSugarGrams = Math.round((currentMl / BASE_ML) * BASE_SUGAR_SWEET * currentSugarFactor);
+
+    defaultTeaGrams = currentTeaGrams;
+    defaultSugarGrams = currentSugarGrams;
+
     renderMetricsUI();
   }
 
   function setStrength(factor, btn) {
+    currentStrengthFactor = factor;
     currentTeaGrams = Math.round((currentMl / BASE_ML) * BASE_TEA * factor * 10) / 10;
     defaultTeaGrams = currentTeaGrams;
     btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
@@ -777,6 +781,7 @@
   }
 
   function setSugarPreset(factor, btn) {
+    currentSugarFactor = factor;
     currentSugarGrams = Math.round((currentMl / BASE_ML) * BASE_SUGAR_SWEET * factor);
     defaultSugarGrams = currentSugarGrams;
     btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
