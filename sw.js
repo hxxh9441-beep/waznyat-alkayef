@@ -3,7 +3,7 @@
    التخزين المؤقت لتشغيل PWA بدون إنترنت
    ============================================ */
 
-const CACHE = 'shahicalc-v2';
+const CACHE = 'shahicalc-v4';
 const ASSETS = [
   './',
   './index.html',
