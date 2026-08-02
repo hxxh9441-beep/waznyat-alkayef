@@ -72,9 +72,9 @@
     --accent: #8E5B2E; 
     --text-primary: #2C2824;
     --text-secondary: #6B645C;
-    --card-bg: rgba(255, 255, 255, 0.42);
+    --card-bg: rgba(255, 255, 255, 0.78);
     --card-border: rgba(255, 255, 255, 0.75);
-    --input-bg: rgba(255, 255, 255, 0.45);
+    --input-bg: rgba(255, 255, 255, 0.60);
     --segment-active: rgba(255, 255, 255, 0.85);
     --orb-1: rgba(255, 255, 255, 0.75);
     --orb-2: rgba(200, 160, 110, 0.35);
@@ -88,9 +88,9 @@
     --accent: #D07F38;
     --text-primary: #F2ECE4;
     --text-secondary: #A0988E;
-    --card-bg: rgba(35, 32, 29, 0.55);
+    --card-bg: rgba(35, 32, 29, 0.80);
     --card-border: rgba(255, 255, 255, 0.12);
-    --input-bg: rgba(255, 255, 255, 0.08);
+    --input-bg: rgba(255, 255, 255, 0.10);
     --segment-active: rgba(255, 255, 255, 0.18);
     --orb-1: rgba(142, 91, 46, 0.25);
     --orb-2: rgba(60, 40, 20, 0.4);
@@ -128,6 +128,12 @@
     opacity: 0;
     background: #DED8CD;
     transition: opacity 0.25s ease;
+  }
+
+  /* أثناء تبديل الثيم: تعطيل كل انتقالات الألوان/الخلفيات مؤقتاً —
+     الـ Crossfade هو الحركة الوحيدة، والثيم يتبدل فورياً خلف الطبقة */
+  .theme-changing *:not(#themeFade) {
+    transition: none !important;
   }
 
   .tea-steep-bg {
@@ -1335,12 +1341,30 @@
   }
 
   let themeFadeTimeout = null;
+  let themeChangingTimeout = null;
 
-  function applyTheme(theme) {
+  // animate=true فقط عند الضغط الفعلي على زر التبديل
+  // animate=false عند تحميل الصفحة — تطبيق فوري بدون طبقة تغطية (سبب عدم الترتيب عند التحديث)
+  function applyTheme(theme, animate = true) {
     // تقنية Crossfade: تغطية الشاشة بلون الثيم الجديد → تبديل الثيم فورياً خلفها → تلاشي
     // العنصر الوحيد المتحرك هو الطبقة — سلسة على أي جهاز مهما كان قوته
     clearTimeout(themeFadeTimeout);
+    clearTimeout(themeChangingTimeout);
     const overlay = document.getElementById('themeFade');
+    
+    if (!animate) {
+      // عند التحميل: تطبيق مباشر بدون أي طبقة — الصفحة تظهر مرتبة فوراً
+      document.body.setAttribute('data-theme', theme);
+      document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+      document.getElementById('themeColorMeta').setAttribute('content', theme === 'dark' ? '#1A1816' : '#DED8CD');
+      overlay.style.opacity = '0';
+      return;
+    }
+    
+    // عطّل كل انتقالات الألوان/الخلفيات مؤقتاً — الـ Crossfade هو الحركة الوحيدة
+    // (يمنع تزامن Crossfade + card transitions + backdrop repaint = سبب الـJank)
+    document.body.classList.add('theme-changing');
+    
     overlay.style.backgroundColor = theme === 'dark' ? '#1A1816' : '#DED8CD';
     overlay.style.opacity = '1';
 
@@ -1349,6 +1373,10 @@
       document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
       document.getElementById('themeColorMeta').setAttribute('content', theme === 'dark' ? '#1A1816' : '#DED8CD');
       overlay.style.opacity = '0';
+      // بعد انتهاء التلاشي: رجّع الانتقالات الطبيعية
+      themeChangingTimeout = setTimeout(() => {
+        document.body.classList.remove('theme-changing');
+      }, 260);
     }, 230);
   }
 
@@ -1579,12 +1607,14 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    initFallingLeaves();
     renderPresets();
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(prefersDark ? 'dark' : 'light');
+    // عند التحميل: تطبيق الثيم مباشرة بدون طبقة crossfade — الصفحة تظهر مرتبة فوراً
+    applyTheme(prefersDark ? 'dark' : 'light', false);
     renderMetricsUI();
     updateTimerDisplay();
+    // الأوراق تبدأ بعد استقرار الصفحة — ترتيب ظهور صحيح: المحتوى أولاً ثم الزخرفة
+    setTimeout(initFallingLeaves, 350);
 
     // رسالة تثبيت مخصصة لمستخدمي آيفون/آيباد (لا يدعمون beforeinstallprompt)
     // لا تظهر داخل التطبيق المثبت (Standalone) — لأنه ثبّت التطبيق أصلاً
