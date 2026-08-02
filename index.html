@@ -101,7 +101,7 @@
     background-color: var(--bg);
     color: var(--text-primary);
     min-height: 100vh;
-    padding: 20px 16px 60px;
+    padding: 20px 16px 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -517,6 +517,12 @@
     z-index: 999; transition: transform 0.4s ease; display: flex; align-items: center; gap: 12px;
   }
   .pwa-banner.show { transform: translateX(-50%) translateY(0); }
+  .pwa-close {
+    background: none; border: none; color: var(--text-secondary);
+    font-size: 10px; cursor: pointer; padding: 0; line-height: 1;
+    opacity: 0.3; flex-shrink: 0; align-self: flex-start; margin-top: 1px;
+  }
+  .pwa-close:hover { opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -684,12 +690,13 @@
 
 <!-- PWA Banner -->
 <div class="pwa-banner" id="pwaBanner">
+  <button class="pwa-close" id="pwaClose" onclick="closePwaBanner()" aria-label="إغلاق">✕</button>
   <span style="font-size: 24px;">🫖</span>
   <div style="flex:1;">
     <h4 style="font-size:13px; color:var(--text-primary);">تثبيت التطبيق 📲</h4>
     <p style="font-size:11px; color:var(--text-secondary);" id="pwaInstruction">أضفه لشاشتك الرئيسية للوصول السريع</p>
   </div>
-  <button style="background:var(--text-primary); color:var(--bg); border:none; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:700;" id="pwaBtn" onclick="installPWA()">تثبيت</button>
+  <button style="background:var(--text-primary); color:var(--bg); border:none; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:700; white-space:nowrap;" id="pwaBtn" onclick="installPWA()">تثبيت</button>
 </div>
 
 <script>
@@ -1031,10 +1038,28 @@
   function hapticFeedback() { if (navigator.vibrate) navigator.vibrate(15); }
 
   let deferredPrompt;
+
+  // كشف أجهزة آيفون/آيباد (حتى Chrome على iOS يستخدم محرك WebKit)
+  function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function showPwaBanner() {
+    document.getElementById('pwaBanner').classList.add('show');
+  }
+
+  function closePwaBanner() {
+    document.getElementById('pwaBanner').classList.remove('show');
+    if (isIOS()) {
+      try { localStorage.setItem('pwa_ios_dismissed', '1'); } catch (err) {}
+    }
+  }
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    document.getElementById('pwaBanner').classList.add('show');
+    showPwaBanner();
   });
 
   function installPWA() {
@@ -1054,6 +1079,19 @@
     applyTheme(prefersDark ? 'dark' : 'light');
     renderMetricsUI();
     updateTimerDisplay();
+
+    // رسالة تثبيت مخصصة لمستخدمي آيفون/آيباد (لا يدعمون beforeinstallprompt)
+    if (isIOS()) {
+      let dismissed = false;
+      try { dismissed = (localStorage.getItem('pwa_ios_dismissed') === '1'); } catch (err) {}
+      if (!dismissed) {
+        document.getElementById('pwaInstruction').textContent = 'اضغط زر المشاركة ⬆️ ثم "إضافة إلى الشاشة الرئيسية"';
+        const btn = document.getElementById('pwaBtn');
+        btn.textContent = 'فهمت ✓';
+        btn.onclick = closePwaBanner;
+        setTimeout(showPwaBanner, 1500);
+      }
+    }
   });
 </script>
 
