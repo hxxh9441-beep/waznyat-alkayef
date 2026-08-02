@@ -270,12 +270,17 @@
     border-radius: var(--radius-md);
     padding: 10px 16px;
     border: 1px solid var(--card-border);
+    cursor: text;
+    position: relative;
   }
   .custom-input-group label {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
     flex: 1;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
   }
   .custom-input-group input {
     background: transparent;
@@ -285,8 +290,14 @@
     font-size: 15px;
     font-weight: 700;
     text-align: left;
-    width: 80px;
     font-family: inherit;
+    /* الخانة تغطي الإطار كاملاً — الضغط في أي مكان داخل الإطار يفتح الكتابة */
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px 16px;
   }
 
   .metrics-grid {
@@ -308,50 +319,61 @@
   .metric-value-box {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin: 6px 0 2px;
+    justify-content: center;
+    gap: 6px;
+    margin: 8px 0;
     background: var(--input-bg);
     border: 1px solid var(--card-border);
     border-radius: 10px;
-    padding: 4px 6px;
+    padding: 8px 10px;
   }
   .metric-value-input {
     background: var(--segment-active);
     border: none;
     outline: none;
     border-radius: 7px;
-    padding: 3px 2px;
-    font-size: 21px;
+    padding: 4px 6px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--text-primary);
-    width: 44px;
+    width: 72px;
     min-width: 0;
     font-family: inherit;
     text-align: center;
   }
+  /* أزرار +/− تحت الرقم — بنمط أزرار مؤقت التخدرة */
+  .metric-steps {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
   .metric-step {
-    background: var(--segment-active);
+    background: var(--input-bg);
     border: 1px solid var(--card-border);
     color: var(--text-primary);
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    font-size: 13px;
+    padding: 5px 0;
+    border-radius: 20px;
+    font-size: 16px;
     font-weight: 800;
     cursor: pointer;
+    flex: 1;
+    max-width: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    flex-shrink: 0;
-    padding: 0;
     -webkit-tap-highlight-color: transparent;
+    /* عودة تدريجية بعد رفع الإصبع — التأثير يبقى مرئياً لحظة بدل ما يختفي فوراً */
+    transition: background 0.5s ease, color 0.5s ease, transform 0.5s ease;
   }
   /* hover فقط للأجهزة اللي فيها ماوس — حتى لا يعلق على شاشات اللمس */
   @media (hover: hover) {
     .metric-step:hover { background: var(--text-secondary); color: var(--bg); }
   }
   .metric-step:active {
+    /* استجابة فورية عند الضغط — بدون انتقال */
+    transition: none;
     transform: scale(0.88);
     background: var(--text-secondary);
     color: var(--bg);
@@ -404,8 +426,12 @@
     box-shadow: none;
   }
   .save-preset-btn:not(:disabled) {
-    background: rgba(142, 91, 46, 0.12);
-    border-color: var(--accent);
+    /* نفس ثيم زر "🔄 إعادة" الثانوي: خلفية فاتحة + نص داكن + حدود */
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+    opacity: 1;
+    box-shadow: none;
   }
   .save-preset-btn:not(:disabled):active {
     transform: scale(0.97);
@@ -439,6 +465,19 @@
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    /* نفس تأثير أزرار +/−: عودة تدريجية بعد رفع الإصبع */
+    transition: background 0.5s ease, color 0.5s ease, transform 0.5s ease;
+  }
+  /* hover فقط للأجهزة اللي فيها ماوس */
+  @media (hover: hover) {
+    .adj-btn:hover { background: var(--text-secondary); color: var(--bg); }
+  }
+  .adj-btn:active {
+    transition: none;
+    transform: scale(0.92);
+    background: var(--text-secondary);
+    color: var(--bg);
   }
 
   .progress-wrapper {
@@ -647,20 +686,24 @@
       <div class="metric-item">
         <div class="metric-label">🍬 السكر</div>
         <div class="metric-value-box">
-          <button class="metric-step" onclick="stepSugar(-1)" aria-label="إنقاص">−</button>
           <input type="text" inputmode="numeric" class="metric-value-input" id="sugarInput" value="65" oninput="onManualSugarChange(this.value)">
-          <button class="metric-step" onclick="stepSugar(1)" aria-label="زيادة">+</button>
           <span class="metric-unit">جرام</span>
+        </div>
+        <div class="metric-steps">
+          <button class="metric-step" onclick="stepSugar(-1)" aria-label="إنقاص">−</button>
+          <button class="metric-step" onclick="stepSugar(1)" aria-label="زيادة">+</button>
         </div>
         <div class="metric-sub" id="sugarTbsp">≈ 5 ملاعق</div>
       </div>
       <div class="metric-item">
         <div class="metric-label">🌿 ورق الشاي</div>
         <div class="metric-value-box">
-          <button class="metric-step" onclick="stepTea(-0.5)" aria-label="إنقاص">−</button>
           <input type="text" inputmode="numeric" class="metric-value-input" id="teaInput" value="12" oninput="onManualTeaChange(this.value)">
-          <button class="metric-step" onclick="stepTea(0.5)" aria-label="زيادة">+</button>
           <span class="metric-unit">جرام</span>
+        </div>
+        <div class="metric-steps">
+          <button class="metric-step" onclick="stepTea(-0.5)" aria-label="إنقاص">−</button>
+          <button class="metric-step" onclick="stepTea(0.5)" aria-label="زيادة">+</button>
         </div>
         <div class="metric-sub" id="teaTbsp">≈ 2 ملعقة</div>
       </div>
