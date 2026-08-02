@@ -121,6 +121,31 @@
   .bg-orb-1 { top: -50px; left: -50px; width: 260px; height: 260px; background: var(--orb-1); }
   .bg-orb-2 { top: 250px; right: -60px; width: 240px; height: 240px; background: var(--orb-2); }
 
+  /* تحسين سلاسة تبديل الثيم على الجوال:
+     - أثناء الانتقال: تعليق الـ backdrop-filter الثقيل والأوراق المتحركة (يعودان فوراً)
+     - على الشاشات الصغيرة: انتقال أقصر = تقطيع أقل */
+  body.theme-switching .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  body.theme-switching .falling-leaf {
+    animation-play-state: paused;
+  }
+  @media (max-width: 768px) {
+    body,
+    .bg-orb,
+    .card,
+    .segment-btn,
+    .preset-chip,
+    .metric-step,
+    .adj-btn,
+    .preset-act-btn,
+    .edit-step,
+    .save-preset-btn {
+      transition-duration: 0.25s;
+    }
+  }
+
   .tea-steep-bg {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -242,7 +267,7 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
     font-family: inherit;
     text-align: center;
     display: flex;
@@ -1328,9 +1353,13 @@
   }
 
   function applyTheme(theme) {
+    // تعليق المؤثرات الثقيلة (blur + الأوراق) أثناء الانتقال للسلاسة على الجوال
+    document.body.classList.add('theme-switching');
     document.body.setAttribute('data-theme', theme);
     document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
     document.getElementById('themeColorMeta').setAttribute('content', theme === 'dark' ? '#1A1816' : '#DED8CD');
+    // إعادة المؤثرات بعد اكتمال الانتقال
+    setTimeout(() => document.body.classList.remove('theme-switching'), 500);
   }
 
   function getPresets() {
