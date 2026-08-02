@@ -72,9 +72,9 @@
     --accent: #8E5B2E; 
     --text-primary: #2C2824;
     --text-secondary: #6B645C;
-    --card-bg: rgba(255, 255, 255, 0.78);
+    --card-bg: rgba(255, 255, 255, 0.42);
     --card-border: rgba(255, 255, 255, 0.75);
-    --input-bg: rgba(255, 255, 255, 0.60);
+    --input-bg: rgba(255, 255, 255, 0.45);
     --segment-active: rgba(255, 255, 255, 0.85);
     --orb-1: rgba(255, 255, 255, 0.75);
     --orb-2: rgba(200, 160, 110, 0.35);
@@ -88,9 +88,9 @@
     --accent: #D07F38;
     --text-primary: #F2ECE4;
     --text-secondary: #A0988E;
-    --card-bg: rgba(35, 32, 29, 0.80);
+    --card-bg: rgba(35, 32, 29, 0.55);
     --card-border: rgba(255, 255, 255, 0.12);
-    --input-bg: rgba(255, 255, 255, 0.10);
+    --input-bg: rgba(255, 255, 255, 0.08);
     --segment-active: rgba(255, 255, 255, 0.18);
     --orb-1: rgba(142, 91, 46, 0.25);
     --orb-2: rgba(60, 40, 20, 0.4);
@@ -1376,8 +1376,8 @@
       // بعد انتهاء التلاشي: رجّع الانتقالات الطبيعية
       themeChangingTimeout = setTimeout(() => {
         document.body.classList.remove('theme-changing');
-      }, 110);
-    }, 90);
+      }, 100);
+    }, 80);
   }
 
   function getPresets() {
