@@ -127,7 +127,7 @@
     pointer-events: none;
     opacity: 0;
     background: #DED8CD;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.1s ease;
   }
 
   /* أثناء تبديل الثيم: تعطيل كل انتقالات الألوان/الخلفيات مؤقتاً —
@@ -1376,8 +1376,8 @@
       // بعد انتهاء التلاشي: رجّع الانتقالات الطبيعية
       themeChangingTimeout = setTimeout(() => {
         document.body.classList.remove('theme-changing');
-      }, 260);
-    }, 230);
+      }, 110);
+    }, 90);
   }
 
   function getPresets() {
