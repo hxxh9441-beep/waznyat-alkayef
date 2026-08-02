@@ -307,25 +307,56 @@
   }
   .metric-value-box {
     display: flex;
-    align-items: baseline;
-    gap: 4px;
+    align-items: center;
+    gap: 6px;
     margin: 6px 0 2px;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 6px 8px;
   }
   .metric-value-input {
     background: transparent;
     border: none;
-    border-bottom: 2px dashed var(--accent);
     outline: none;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--text-primary);
-    width: 65px;
+    width: 52px;
     font-family: inherit;
+    text-align: center;
   }
+  .metric-step {
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.2s ease;
+  }
+  .metric-step:hover { background: var(--accent); color: var(--bg); }
+  /* إخفاء مثلثات الزيادة/النقص الافتراضية — تبقى أسهم الكيبورد ⬆️⬇️ شغالة */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .metric-unit {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--text-secondary);
+    white-space: nowrap;
   }
   .metric-sub {
     font-size: 11px;
@@ -604,7 +635,9 @@
       <div class="metric-item">
         <div class="metric-label">🍬 السكر</div>
         <div class="metric-value-box">
+          <button class="metric-step" onclick="stepSugar(-1)" aria-label="إنقاص">−</button>
           <input type="number" class="metric-value-input" id="sugarInput" value="65" oninput="onManualSugarChange(this.value)">
+          <button class="metric-step" onclick="stepSugar(1)" aria-label="زيادة">+</button>
           <span class="metric-unit">جرام</span>
         </div>
         <div class="metric-sub" id="sugarTbsp">≈ 5 ملاعق</div>
@@ -612,7 +645,9 @@
       <div class="metric-item">
         <div class="metric-label">🌿 ورق الشاي</div>
         <div class="metric-value-box">
+          <button class="metric-step" onclick="stepTea(-0.5)" aria-label="إنقاص">−</button>
           <input type="number" class="metric-value-input" id="teaInput" value="12" step="0.5" oninput="onManualTeaChange(this.value)">
+          <button class="metric-step" onclick="stepTea(0.5)" aria-label="زيادة">+</button>
           <span class="metric-unit">جرام</span>
         </div>
         <div class="metric-sub" id="teaTbsp">≈ 2 ملعقة</div>
@@ -845,6 +880,22 @@
     checkSaveState();
   }
 
+  // أزرار +/− للخانات (السكر خطوة 1، الشاي خطوة 0.5)
+  function stepSugar(delta) {
+    const input = document.getElementById('sugarInput');
+    const val = Math.max(0, Math.round(((parseFloat(input.value) || 0) + delta) * 10) / 10);
+    input.value = val;
+    onManualSugarChange(val);
+    hapticFeedback();
+  }
+  function stepTea(delta) {
+    const input = document.getElementById('teaInput');
+    const val = Math.max(0, Math.round(((parseFloat(input.value) || 0) + delta) * 10) / 10);
+    input.value = val;
+    onManualTeaChange(val);
+    hapticFeedback();
+  }
+
   function updateTimerDisplay() {
     const m = Math.floor(timerSeconds / 60);
     const s = timerSeconds % 60;
@@ -1045,6 +1096,12 @@
            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   }
 
+  // كشف إذا المستخدم داخل التطبيق المثبت (Standalone) — فما نعرض له رسالة التثبيت
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+           (navigator.standalone === true);
+  }
+
   function showPwaBanner() {
     document.getElementById('pwaBanner').classList.add('show');
   }
@@ -1081,7 +1138,8 @@
     updateTimerDisplay();
 
     // رسالة تثبيت مخصصة لمستخدمي آيفون/آيباد (لا يدعمون beforeinstallprompt)
-    if (isIOS()) {
+    // لا تظهر داخل التطبيق المثبت (Standalone) — لأنه ثبّت التطبيق أصلاً
+    if (isIOS() && !isStandalone()) {
       let dismissed = false;
       try { dismissed = (localStorage.getItem('pwa_ios_dismissed') === '1'); } catch (err) {}
       if (!dismissed) {
